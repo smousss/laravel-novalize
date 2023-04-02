@@ -24,7 +24,7 @@ class NovalizeCommand extends Command
             return self::FAILURE;
         }
 
-        $model = $this->ask("Name of your model (e.g. App\Models\Post)", 'App\Models\Article');
+        $model = $this->ask("Name of your model (e.g. App\Models\Post)", 'App\Models\Post');
 
         $modelInstance = (new $model);
 
