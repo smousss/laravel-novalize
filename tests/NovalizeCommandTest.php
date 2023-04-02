@@ -1,5 +1,6 @@
 <?php
 
+use function Pest\Laravel\artisan;
 use Illuminate\Support\Facades\Artisan;
 
 it('registers the command', function () {
@@ -9,5 +10,5 @@ it('registers the command', function () {
 });
 
 it("throws an exception when the secret key isn't set", function () {
-    $this->artisan('smousss:novalize')->assertExitCode(1);
+    artisan('smousss:novalize')->assertExitCode(1);
 });
