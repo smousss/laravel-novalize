@@ -36,7 +36,9 @@ class NovalizeCommand extends Command
 
         $response = Http::withToken(config('novalize.secret_key'))
             ->timeout(300)
-            ->post('https://smousss.com/api/novalize', compact('model_code', 'model_schema'))
+            ->post(config('novalize.debug', false)
+                ? 'https://smousss.test/api/novalize'
+                : 'https://smousss.com/api/novalize', compact('model_code', 'model_schema'))
             ->throw()
             ->json();
 
