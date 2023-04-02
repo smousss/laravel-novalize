@@ -3,6 +3,7 @@
 namespace Smousss\Laravel\Novalize\Commands;
 
 use ReflectionClass;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NovalizeCommand extends Command
 {
-    protected $signature = 'smousss:novalize';
+    protected $signature = 'smousss:novalize {model?*}';
 
     protected $description = 'Create a Nova resource for a given model';
 
@@ -24,8 +25,23 @@ class NovalizeCommand extends Command
             return self::FAILURE;
         }
 
-        $model = $this->ask("Name of your model (e.g. App\Models\Post)", 'App\Models\Post');
+        if (! ($model = $this->argument('model'))) {
+            $model = $this->ask("Name of your model (e.g. App\Models\Post)", 'App\Models\Post');
+        }
 
+        foreach (Arr::wrap($model) as $key => $value) {
+            if ($key > 0) {
+                $this->newLine();
+            }
+
+            $this->generateNovaResource($value);
+        }
+
+        return self::SUCCESS;
+    }
+
+    public function generateNovaResource(string $model) : void
+    {
         $modelInstance = (new $model);
 
         $model_code = $this->getSourceCodeForModel($modelInstance);
@@ -47,8 +63,6 @@ class NovalizeCommand extends Command
         File::put(base_path($path = "app/Nova/{$baseModelName}.php"), trim(trim($response['data'], '`ph')) . PHP_EOL);
 
         $this->info("Your new Nova resource has been created at $path! 🎉 (Tokens: {$response['meta']['consumed_tokens']})");
-
-        return self::SUCCESS;
     }
 
     protected function getSourceCodeForModel(Model $model) : string
