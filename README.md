@@ -70,7 +70,8 @@ php artisan vendor:publish --tag=novalize-config
 ## Usage
 
 1. First, generate a secret key on smousss.com.
-2. Then, create a Nova resource based on your Post model: `php artisan smousss:novalize App\\Models\\Post`. Or for multiple models: `php artisan smousss:novalize App\\Models\\Post App\\Models\\Comment`
+2. Add it to your `SMOUSSS_SECRET_KEY` environment variable.
+3. Then, create a Nova resource based on your Post model: `php artisan smousss:novalize App\\Models\\Post`. Or for multiple models: `php artisan smousss:novalize App\\Models\\Post App\\Models\\Comment`
 
 ## Credit
 
