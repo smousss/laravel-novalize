@@ -51,7 +51,7 @@ class NovalizeCommand extends Command
         $this->line("GPT-4 is generating tokens for your Nova resource based on {$model}…");
 
         $response = Http::withToken(config('novalize.secret_key'))
-            ->timeout(600)
+            ->timeout(300)
             ->retry(3)
             ->withHeaders(['Accept' => 'application/json'])
             ->post(config('novalize.debug', false)
