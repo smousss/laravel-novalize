@@ -4,7 +4,6 @@ namespace Smousss\Laravel\Novalize\Commands;
 
 use ReflectionClass;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -60,7 +59,7 @@ class NovalizeCommand extends Command
             ->throw()
             ->json();
 
-        $baseModelName = Str::after($model, 'App\\Models\\');
+        $baseModelName = str($model)->explode('\\')->last();
 
         File::put(base_path($path = "app/Nova/{$baseModelName}.php"), trim(trim($response['data'], '`ph')) . PHP_EOL);
 
