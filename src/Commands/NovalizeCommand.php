@@ -68,12 +68,12 @@ class NovalizeCommand extends Command
 
     protected function getSourceCodeForModel(Model $model) : string
     {
-        $sourceCode = File::get((new ReflectionClass($model::class))->getFileName());
+        $file = (new ReflectionClass($model::class))->getFileName();
 
-        $sourceCode = str_replace("\t", '', $sourceCode);
-        $sourceCode = str_replace("\n", ' ', $sourceCode);
-
-        return preg_replace('/ {2,}/', ' ', $sourceCode);
+        return str(File::get($file))
+            ->replace(["\t", "\n"], [' ', ' '])
+            ->replaceMatches('/ {2,}/', ' ')
+            ->replaceMatches('/\/\*[\s\S]*?\*\/|\/\/.*/', '');
     }
 
     protected function getSchemaForModel(Model $model)
