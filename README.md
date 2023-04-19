@@ -1,10 +1,12 @@
-# Novalize for Laravel
-
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/smousss/laravel-novalize.svg?style=flat-square)](https://packagist.org/packages/smousss/laravel-novalize)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/smousss/laravel-novalize/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/smousss/laravel-novalize/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/smousss/laravel-novalize.svg?style=flat-square)](https://packagist.org/packages/smousss/laravel-novalize)
 
-Smousss can generate Laravel Nova resources in a few seconds using GPT-4 to help you speed up your admin panel's development.
+![Novalize](https://user-images.githubusercontent.com/3613731/233006265-fadd7b0f-a892-41b4-98e3-c4d4f75e3669.png)
+
+# Create Laravel Nova admin panels at light speed!
+
+Smousss generates Laravel Nova resources in a few seconds using GPT-4 to help you speed up your admin panel's development.
 
 ```php
 namespace App\Nova;
