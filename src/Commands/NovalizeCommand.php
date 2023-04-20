@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Client\RequestException;
 
 class NovalizeCommand extends Command
 {
@@ -28,42 +29,41 @@ class NovalizeCommand extends Command
             $model = $this->ask("Name of your model (e.g. App\Models\Post)", 'App\Models\Post');
         }
 
-        foreach (Arr::wrap($model) as $key => $value) {
+        foreach (Arr::wrap($model) as $key => $model) {
             if ($key > 0) {
                 $this->newLine();
             }
 
-            $this->generateNovaResource($value);
+            $modelInstance = (new $model);
+
+            $model_code = $this->getSourceCodeForModel($modelInstance);
+
+            $model_schema = implode('; ', $this->getSchemaForModel($modelInstance));
+
+            $this->line("GPT-4 is generating tokens for your Nova resource based on {$model}…");
+
+            try {
+                $response = Http::withToken(config('novalize.secret_key'))
+                    ->timeout(300)
+                    ->retry(3)
+                    ->withHeaders(['Accept' => 'application/json'])
+                    ->post(config('novalize.debug', false)
+                        ? 'https://smousss.test/api/novalize'
+                        : 'https://smousss.com/api/novalize', compact('model_code', 'model_schema'))
+                    ->throw()
+                    ->json();
+
+                $baseModelName = str($model)->explode('\\')->last();
+
+                File::put(base_path($path = "app/Nova/{$baseModelName}.php"), trim(trim($response['data'], '`ph')) . PHP_EOL);
+
+                $this->info("Your new Nova resource has been created at $path! 🎉 (Tokens: {$response['meta']['consumed_tokens']})");
+            } catch (RequestException $e) {
+                $this->error($e->response->json()['message']);
+            }
         }
 
         return self::SUCCESS;
-    }
-
-    public function generateNovaResource(string $model) : void
-    {
-        $modelInstance = (new $model);
-
-        $model_code = $this->getSourceCodeForModel($modelInstance);
-
-        $model_schema = implode('; ', $this->getSchemaForModel($modelInstance));
-
-        $this->line("GPT-4 is generating tokens for your Nova resource based on {$model}…");
-
-        $response = Http::withToken(config('novalize.secret_key'))
-            ->timeout(300)
-            ->retry(3)
-            ->withHeaders(['Accept' => 'application/json'])
-            ->post(config('novalize.debug', false)
-                ? 'https://smousss.test/api/novalize'
-                : 'https://smousss.com/api/novalize', compact('model_code', 'model_schema'))
-            ->throw()
-            ->json();
-
-        $baseModelName = str($model)->explode('\\')->last();
-
-        File::put(base_path($path = "app/Nova/{$baseModelName}.php"), trim(trim($response['data'], '`ph')) . PHP_EOL);
-
-        $this->info("Your new Nova resource has been created at $path! 🎉 (Tokens: {$response['meta']['consumed_tokens']})");
     }
 
     protected function getSourceCodeForModel(Model $model) : string
