@@ -45,7 +45,7 @@ class NovalizeCommand extends Command
             try {
                 $response = Http::withToken(config('novalize.secret_key'))
                     ->timeout(300)
-                    ->retry(3)
+                    ->retry(3, 1000)
                     ->withHeaders(['Accept' => 'application/json'])
                     ->post(config('novalize.debug', false)
                         ? 'https://smousss.test/api/novalize'
@@ -60,6 +60,8 @@ class NovalizeCommand extends Command
                 $this->info("Your new Nova resource has been created at $path! 🎉 (Tokens: {$response['meta']['consumed_tokens']})");
             } catch (RequestException $e) {
                 $this->error($e->response->json()['message']);
+
+                exit(self::FAILURE);
             }
         }
 
